@@ -4,7 +4,11 @@ class TypingEngine {
   int index = 0;
   boolean[] isCorrect;
   boolean failed = false;
-  String[] sentences = {"Keep reeling it in", "The ocean is deep and blue", "Dont let it get away"};
+
+  // Categorized sentence pools
+  String[] easySentences = {"Easy does it", "Hold the line", "Fish on"};
+  String[] mediumSentences = {"Keep reeling it in", "Dont let it get away", "Pull it closer"};
+  String[] hardSentences = {"The ocean is deep and blue", "Fighting a monster of the deep", "Hold on for dear life"};
 
   void setTarget(String t, boolean clearInput) {
     target = t;
@@ -26,14 +30,15 @@ class TypingEngine {
   void checkReelingInput(Fish f) {
     if (index < target.length()) {
       if (Character.toLowerCase(key) == Character.toLowerCase(target.charAt(index))) {
-        f.x -= 25;
+        f.fishX -= 25;
         isCorrect[index] = true;
       } else {
-        f.x += 35;
+        f.fishX += 35;
         isCorrect[index] = false;
       }
       index++;
-      if (index >= target.length()) setTarget(getRandomSentence(), false);
+      // Pull next sentence from the specific difficulty pool of the current fish
+      if (index >= target.length()) setTarget(getRandomSentence(f.fishDiff), false);
     }
   }
 
@@ -59,7 +64,14 @@ class TypingEngine {
     }
   }
 
-  String getRandomSentence() {
-    return sentences[(int)random(sentences.length)];
+  // Gets a random sentence based on the passed difficulty string
+  String getRandomSentence(String diff) {
+    if (diff.equals("easy")) {
+      return easySentences[(int)random(easySentences.length)];
+    } else if (diff.equals("medium")) {
+      return mediumSentences[(int)random(mediumSentences.length)];
+    } else {
+      return hardSentences[(int)random(hardSentences.length)];
+    }
   }
 }
