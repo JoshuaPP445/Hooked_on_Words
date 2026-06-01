@@ -63,42 +63,32 @@ class GameManager {
   }
 
   void drawFishingLine() {
-    // 1. Define our new fixed rod tip anchor points
     float rodTipX = 242;
     float rodTipY = 215;
 
     strokeWeight(1);
-    stroke(0); // Black fishing line
+    stroke(0); 
     
     if (gameState == 1 && currentFish != null) {
-      // Reeling Phase: Line connects from the rod tip straight to the fish
-      // Offset the connection point to the left edge of the fish image (X - 32 for our 64x64 scale)
       float hookX = currentFish.fishX - 24;
-      float hookY = 350;
+      float hookY = 380; // Changed from 350 to 380
       
       line(rodTipX, rodTipY, hookX, hookY);
       
     } else {
-      // Waiting/Fishing Phases: String hangs straight down from the rod tip into the water [cite: 18]
-      // Let's drop it down to Y = 320 so it rests nicely just under the water surface
-      float lineDropY = 320; 
-      
+      float lineDropY = 320;
       line(rodTipX, rodTipY, rodTipX, lineDropY);
       
-      // Draw the red and white bobber floating at the end of the line
       strokeWeight(1);
       stroke(0);
       
-      // Top red half of bobber
       fill(255, 0, 0);
       arc(rodTipX, lineDropY, 12, 12, PI, TWO_PI, CHORD);
       
-      // Bottom white half of bobber
       fill(255);
       arc(rodTipX, lineDropY, 12, 12, 0, PI, CHORD);
     }
-
-    noStroke(); // cite: 21
+    noStroke();
   }
 
   void drawFishingPhase() {
@@ -111,13 +101,11 @@ class GameManager {
 
       if (currentFish.fishImg != null) {
         pushMatrix();
-        translate(currentFish.fishX, 350);
+        translate(currentFish.fishX, 380); // Changed from 350 to 380
         imageMode(CENTER);
-        tint(0, 50, 120, 100); // Blue silhouette effect
+        tint(0, 50, 120, 100); 
         
-        // Render 1280x1280 image gracefully down to 64x64 (or 48x48)
-        image(currentFish.fishImg, 0, 0, 64, 64); 
-        
+        image(currentFish.fishImg, 0, 0, 64, 64);
         noTint();
         popMatrix();
         imageMode(CORNER);
@@ -127,7 +115,7 @@ class GameManager {
       typer.displayBubble();
       fill(255);
       textSize(16);
-      text(currentFish.name, currentFish.fishX, 380);
+      text(currentFish.name, currentFish.fishX, 410); // Changed from 380 to 410 so it sits nicely below the fish
     }
   }
 

@@ -36,23 +36,22 @@ class Fish {
 
   void displayShadow() {
     fill(50, 50, 50, 150);
-    ellipse(fishX, 350, 50, 30);
+    ellipse(fishX, 380, 50, 30); // Changed from 350 to 380
   }
 
   void displayFish() {
     if (fishImg != null) {
       pushMatrix();
-      translate(fishX, 350);
+      translate(fishX, 380); // Changed from 350 to 380
       imageMode(CENTER);
       
       // Resizing 1280x1280 down to 64x64 on the fly for better visibility
-      image(fishImg, 0, 0, 64, 64); 
-      
+      image(fishImg, 0, 0, 64, 64);
       popMatrix();
       imageMode(CORNER);
     } else {
       fill(50, 80, 150);
-      ellipse(fishX, 350, 40, 25);
+      ellipse(fishX, 380, 40, 25); // Changed from 350 to 380
     }
   }
 }
