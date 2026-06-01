@@ -29,8 +29,8 @@ class GameManager {
   }
 
   void run() {
-    drawEnvironment();
-    drawFisherman();
+    drawFishingLine();
+    
     drawUI();
     switch(gameState) {
     case WAITING:
@@ -55,57 +55,50 @@ class GameManager {
     waitTimer--;
     textAlign(CENTER);
     fill(0, 100);
-    text("Waiting for a bite...", width/2, height/2 + 100);
+    text("Waiting for a bite...", width/2, height/2 + 50);
 
     if (waitTimer <= 0) {
       spawnFish();
     }
   }
 
-  void drawFisherman() {
-    stroke(0);
-    strokeWeight(2);
-    float bodyX = 100;
-    float bodyY = 240;
-    line(bodyX, bodyY, bodyX, bodyY + 40);
-    line(bodyX, bodyY + 10, bodyX - 15, bodyY + 25);
-    line(bodyX, bodyY + 10, bodyX + 15, bodyY + 25);
-    line(bodyX, bodyY + 40, bodyX - 10, bodyY + 60);
-    line(bodyX, bodyY + 40, bodyX + 10, bodyY + 60);
-    fill(255);
-    ellipse(bodyX, bodyY - 10, 20, 20);
-
-    strokeWeight(4);
-    stroke(100, 50, 0);
-    line(bodyX + 10, bodyY + 20, bodyX + 60, bodyY - 40);
+  void drawFishingLine() {
+    // 1. Define our new fixed rod tip anchor points
+    float rodTipX = 242;
+    float rodTipY = 215;
 
     strokeWeight(1);
-    stroke(0);
+    stroke(0); // Black fishing line
+    
     if (gameState == 1 && currentFish != null) {
-      // Offset the connection point to the left edge of the fish image (X - 24)
+      // Reeling Phase: Line connects from the rod tip straight to the fish
+      // Offset the connection point to the left edge of the fish image (X - 32 for our 64x64 scale)
       float hookX = currentFish.fishX - 24;
-      float hookY = 350; 
+      float hookY = 350;
       
-      line(bodyX + 60, bodyY - 40, hookX, hookY);
+      line(rodTipX, rodTipY, hookX, hookY);
+      
     } else {
-      // String hangs loosely during waiting/fishing phases
-      line(bodyX + 60, bodyY - 40, bodyX + 60, bodyY + 20);
+      // Waiting/Fishing Phases: String hangs straight down from the rod tip into the water [cite: 18]
+      // Let's drop it down to Y = 320 so it rests nicely just under the water surface
+      float lineDropY = 320; 
+      
+      line(rodTipX, rodTipY, rodTipX, lineDropY);
+      
+      // Draw the red and white bobber floating at the end of the line
       strokeWeight(1);
       stroke(0);
+      
+      // Top red half of bobber
       fill(255, 0, 0);
-      arc(bodyX + 60, bodyY + 20, 12, 12, PI, TWO_PI, CHORD);
+      arc(rodTipX, lineDropY, 12, 12, PI, TWO_PI, CHORD);
+      
+      // Bottom white half of bobber
       fill(255);
-      arc(bodyX + 60, bodyY + 20, 12, 12, 0, PI, CHORD);
+      arc(rodTipX, lineDropY, 12, 12, 0, PI, CHORD);
     }
 
-    noStroke();
-  }
-
-  void drawEnvironment() {
-    fill(100, 150, 255);
-    rect(0, 300, width, 150); 
-    fill(100, 70, 40);
-    rect(0, 280, 150, 170); 
+    noStroke(); // cite: 21
   }
 
   void drawFishingPhase() {
@@ -116,22 +109,20 @@ class GameManager {
         return;
       }
 
-      // Draw an underwater silhouette preview of our unique image
       if (currentFish.fishImg != null) {
         pushMatrix();
         translate(currentFish.fishX, 350);
-        rotate(radians(-45));
-        scale(-1, 1);
         imageMode(CENTER);
-        tint(0, 50, 120, 100);
-        // Blue tint overlay for water silhouette effect
-        image(currentFish.fishImg, 0, 0, 48, 48);
-        noTint(); // Turn off tint so other imagery prints cleanly
+        tint(0, 50, 120, 100); // Blue silhouette effect
+        
+        // Render 1280x1280 image gracefully down to 64x64 (or 48x48)
+        image(currentFish.fishImg, 0, 0, 64, 64); 
+        
+        noTint();
         popMatrix();
         imageMode(CORNER);
       }
       
-      // Draw the shadow
       currentFish.displayShadow();
       typer.displayBubble();
       fill(255);
@@ -146,18 +137,15 @@ class GameManager {
       currentFish.displayFish();
       typer.displaySentence();
 
-      // Calculate hookX based on the left edge of the fish
-      float hookX = currentFish.fishX - 24;
-
-      // Check success condition against the pier edge using hookX
-      if (hookX <= 150) {
-        score += currentFish.fishScore; 
+      // Adjust bounding checks if your new background structure implies different boundaries
+      float hookX = currentFish.fishX - 32; 
+      if (hookX <= 215) {
+        score += currentFish.fishScore;
         startWaiting();
         return;
       }
 
-      // Check failure boundary condition using hookX
-      if (hookX >= 750) {
+      if (hookX >= width) {
         loseLife();
         return;
       }
@@ -194,10 +182,10 @@ class GameManager {
     text("SCORE: " + score, 20, 40);
     text("LIVES: " + lives, 20, 70);
     
-    if ((gameState == 0 || gameState == 1) && currentFish != null) {
-      textAlign(RIGHT);
-      text(currentFish.name.toUpperCase() + " [" + currentFish.fishDiff.toUpperCase() + "]", width - 20, 40);
-    }
+    //if ((gameState == 0 || gameState == 1) && currentFish != null) {
+    //  textAlign(RIGHT);
+    //  text(currentFish.name.toUpperCase() + " [" + currentFish.fishDiff.toUpperCase() + "]", width - 20, 40);
+    //}
   }
 
   void drawGameOver() {
