@@ -1,59 +1,73 @@
 # Hooked on Words
 
-A fast-paced, arcade-style typing game built with Processing (Java). Players take on the role of a fisherman trying to reel in different fish species by typing dynamically generated sentences. Each fish features distinct artwork, difficulty levels, and scoring values.
-
-## Game Mechanics & Phases
-
-The game cycles through four main states managed by a state engine:
-
-1. **Start Screen (State 3):** Displays the game title. Press `SPACE` to start.
-2. **Waiting Phase (State 4 / WAITING):** The fisherman waits for a random period (1 to 3 seconds) for a fish to bite.
-3. **Fishing Phase (State 0):** A fish bites! An underwater silhouette of the specific fish appears alongside a text bubble. Type the name of the fish and press `ENTER` to hook it. Missing the target or taking too long results in a lost life.
-4. **Reeling Phase (State 1):** The fish is hooked! The line physically attaches to the mouth of the fish image. You must accurately type sentences that pull from custom pools based on that fish's difficulty tier:
-   * **Correct characters:** Pull the fish closer to the pier (`hookX` decreases).
-   * **Incorrect characters / Fish struggle:** The fish fights back and pulls away (`hookX` increases).
-5. **Game Over (State 2):** Triggered when lives reach 0. Displays your final score. Press `SPACE` to reset and try again.
+**Hooked on Words** is a fast-paced, arcade-style typing game built using Processing. Players step into the boots of a fisherman trying to reel in different fish species by typing out words and sentences. The faster and more accurately you type, the better your chances of landing a prize catch!
 
 ---
 
-## Dynamic Difficulty & Scoring System
+## How to Play
 
-Fish are categorized into three explicit difficulty tiers (`easy`, `medium`, and `hard`). The difficulty determines how aggressively the fish struggles, the length/complexity of the sentences generated, and the point reward upon a successful catch.
+The main game loop is run directly from `Hooked_on_Words.pde`, which acts as the core of the application. The game handles transitions through the following stages:
 
-| Fish Species | Difficulty Tier | Point Value | Struggle Factor |
-| :--- | :--- | :--- | :--- |
-| **Bass** | Easy | 5 pts | 0.4 (Low struggle) |
-| **Mackerel** | Medium | 15 pts | 0.9 (Moderate struggle) |
-| **Snapper** | Medium | 15 pts | 0.9 (Moderate struggle) |
-| **Trout** | Hard | 40 pts | 1.4 (Heavy struggle) |
-| **Tuna** | Hard | 40 pts | 1.4 (Heavy struggle) |
-
-### Sentences Pools By Difficulty
-* **Easy:** Short, introductory phrasing (*"Easy does it"*, *"Hold the line"*, *"Fish on"*)
-* **Medium:** Longer action phrases (*"Keep reeling it in"*, *"Dont let it get away"*, *"Pull it closer"*)
-* **Hard:** Longer, complex descriptions (*"The ocean is deep and blue"*, *"Fighting a monster of the deep"*, *"Hold on for dear life"*)
+1. **The Boat (Start Screen):** Press `SPACEBAR` to cast your line and begin.
+2. **Waiting for a Bite:** Relax and wait. A fish will randomly bite within a few seconds.
+3. **The Bite (Fishing Phase):** When a fish strikes, its silhouette appears underwater with a text bubble. Type the exact name of the fish and press `ENTER` to hook it. If you mistype or wait too long, the fish will get away and you will lose a life!
+4. **The Fight (Reeling Phase):** Once hooked, the real battle begins! Sentences will appear on the screen. 
+   * **Type correctly:** You pull the fish closer to the pier.
+   * **Type incorrectly / Fish struggles:** The fish fights back and swims further out to sea.
+   * **Win/Loss:** If you pull the fish all the way to safety, you catch it and earn points! If it swims off the edge of the screen, it snaps your line and you lose a life.
+5. **Game Over:** Lose all 3 lives, and the game ends. Press `SPACEBAR` to reset your score and try again.
 
 ---
 
-## Technical Features
+## Code Architecture
 
-* **Matrix Transformations:** Leverages `pushMatrix()`, `popMatrix()`, `translate()`, `rotate()`, and `scale()` to manipulate 48x48 pixel PNG assets—applying a precise 45-degree rotation and a vertical flip to render sprites correctly.
-* **Pixel-Perfect Boundary Physics:** Game victory and failure thresholds during the reeling phase evaluate the line connection offset point (`hookX`) rather than the asset's center point (`fishX`). The fish escapes if `hookX >= 750` and is successfully caught when `hookX <= 150`.
-* **Visual Effects:** Utilizes a custom color tint overlay (`tint(0, 50, 120, 100)`) to project an underwater silhouette preview of the specific fish model during the initial bite phase.
+The game's inner workings are split across a few key files to keep everything organized:
+* `Hooked_on_Words.pde`: The central window that loads the graphics, sets up the window size, and keeps the game drawing smoothly.
+* `GameManager.pde`: The brain of the operation. It keeps track of your score, your lives, and decides whether you are currently waiting, fishing, reeling, or looking at a Game Over screen.
+* `Fish.pde`: Governs the individual fish types. It handles what they look like, how many points they are worth, and how hard they pull away from you during a struggle.
+* `TypingEngine.pde`: The spelling coach. It checks your keystrokes to see if you are typing the letters correctly and displays the text bubble prompts on your screen.
 
 ---
 
-## Assets Setup
+## Fish Species & Difficulty
 
-To successfully run this sketch, ensure your root project contains a folder named `data/` with the following 48x48 pixel image files:
+Different fish have different behaviors. Harder fish are worth more points but will struggle more violently against your line and require you to type longer, trickier sentences.
+
+| Fish Species | Difficulty | Points | Fight Level | Sentence Examples |
+| :--- | :--- | :--- | :--- | :--- |
+| **Bass** | Easy | 5 pts | Low | *"Easy does it"*, *"Fish on"* |
+| **Trout** | Medium | 15 pts | Moderate | *"Keep reeling it in"*, *"Pull it closer"* |
+| **Snapper** | Medium | 15 pts | Moderate | *"Keep reeling it in"*, *"Dont let it get away"* |
+| **Salmon** | Hard | 40 pts | Heavy | *"The ocean is deep and blue"*, *"Hold on for dear life"* |
+| **Tuna** | Hard | 40 pts | Heavy | *"Fighting a monster of the deep"* |
+
+---
+
+## Game Controls
+
+* **`Letters (A-Z)`**: Type the matching characters on screen to hook or reel in fish.
+* **`BACKSPACE`**: Delete a typo while trying to type the fish's name during a bite.
+* **`ENTER / RETURN`**: Submit the fish's name to hook it.
+* **`SPACEBAR`**: Start the game or restart after a Game Over.
+
+---
+
+## Game Assets Setup
+
+To run this game, make sure your project has a folder named `data/` containing the following animation and image files:
+
+* `ocean.gif` (The moving water background)
+* `background_1.jpg` & `background_2.png` (The scenery elements)
 * `bass.png`
-* `mackerel.png`
-* `snapper.png`
 * `trout.png`
+* `snapper.png`
+* `salmon.png`
 * `tuna.png`
 
-## Controls
-* **`A-Z / Keys`**: Type letters corresponding to targets or sentences.
-* **`BACKSPACE`**: Delete character inputs inside the fish bite text bubble.
-* **`ENTER / RETURN`**: Submit your text string in the fishing bite phase.
-* **`SPACEBAR`**: Progress past the start screen or restart from a game-over screen.
+---
+
+## Team Members
+
+* **[Joshua Putra Pratama/F11415027]**
+* **[Lucas Metzger/F11415020]**
+* **[Pei Chen, Lin/B11110113]**
