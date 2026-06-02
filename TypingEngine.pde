@@ -29,25 +29,21 @@ class TypingEngine {
 
   void checkReelingInput(Fish f, GameManager gm) {
   // Calculate total distance the fish needs to travel to reach the caught zone
-  float totalDistance = f.initialFishX - gm.fishCaughtX;
+  float totalDistance = f.fishX - gm.fishCaughtX;
+  int remainingChars = target.length() - index;
+  float step = totalDistance / remainingChars;
   
   if (index < target.length()) {
     // Each character represents 1 / target.length() of that total distance
-    float step = totalDistance / target.length(); 
     
     if (Character.toLowerCase(key) == Character.toLowerCase(target.charAt(index))) {
       f.fishX -= step; // Pulls closer by exactly 1 fraction of the distance
       isCorrect[index] = true;
     } else {
-      f.fishX += step * 3; // Incorrect stroke penalizes by 3 fractions backward
+      f.fishX += 35; // Incorrect stroke penalizes by 3 fractions backward
       isCorrect[index] = false;
     }
     index++;
-    
-    // Pull next sentence from the specific difficulty pool if this one is finished
-    if (index >= target.length()) {
-      setTarget(getRandomSentence(f.fishDiff), false);
-    }
   }
 }
 
