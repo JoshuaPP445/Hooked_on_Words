@@ -1,9 +1,9 @@
-import gifAnimation.*; // Import the GIF library
+import gifAnimation.*;
 
 GameManager gm;
 final int WAITING = 4;
 PImage bgImgFront, bgImgBack;
-Gif oceanGif;   // Declare the GIF variable
+Gif oceanGif;
 
 void setup() {
   size(800, 450);
@@ -11,22 +11,19 @@ void setup() {
   bgImgBack = loadImage("background_1.jpg");
   bgImgFront = loadImage("background_2.png");
   
-  // Load the GIF from your data folder and pass 'this' sketch context
   oceanGif = new Gif(this, "ocean.gif");
-  oceanGif.loop(); // Tell the GIF to loop continuously 
+  oceanGif.loop();
   
   gm = new GameManager();
 }
 
 void draw() {
-  // 1. Draw the static background (Sky, Boat, Fisherman)
   if (bgImgBack != null) {
     image(bgImgBack, 0, 0);
   } else {
     background(200, 230, 255);
   }
   
-  // 2. Overlay the flowing ocean GIF on top of the old static water
   if (oceanGif != null) {
     image(oceanGif, 0, 0);
   }
@@ -37,7 +34,6 @@ void draw() {
     background(200, 230, 255);
   }
   
-  // 3. Run game elements (Line, Bobber, UI, Fish) over the environment
   gm.run();
 }
 

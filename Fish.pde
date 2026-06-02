@@ -11,7 +11,6 @@ class Fish {
     fishX = random(400, 600);
     name = names[(int)random(names.length)];
     
-    // Remember to save your new images as transparent .png files!
     fishImg = loadImage(name.toLowerCase() + ".png");
     
     if (name.equals("Bass")) {
@@ -36,13 +35,13 @@ class Fish {
 
   void displayShadow() {
     fill(50, 50, 50, 150);
-    ellipse(fishX, 380, 50, 30); // Changed from 350 to 380
+    ellipse(fishX, 380, 50, 30);
   }
 
   void displayFish() {
     if (fishImg != null) {
       pushMatrix();
-      translate(fishX, 380); // Changed from 350 to 380
+      translate(fishX, 380);
       imageMode(CENTER);
       
       // Resizing 1280x1280 down to 64x64 on the fly for better visibility
@@ -51,7 +50,7 @@ class Fish {
       imageMode(CORNER);
     } else {
       fill(50, 80, 150);
-      ellipse(fishX, 380, 40, 25); // Changed from 350 to 380
+      ellipse(fishX, 380, 40, 25);
     }
   }
 }

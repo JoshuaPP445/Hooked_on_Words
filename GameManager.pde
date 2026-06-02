@@ -71,7 +71,7 @@ class GameManager {
     
     if (gameState == 1 && currentFish != null) {
       float hookX = currentFish.fishX - 24;
-      float hookY = 380; // Changed from 350 to 380
+      float hookY = 380;
       
       line(rodTipX, rodTipY, hookX, hookY);
       
@@ -101,7 +101,7 @@ class GameManager {
 
       if (currentFish.fishImg != null) {
         pushMatrix();
-        translate(currentFish.fishX, 380); // Changed from 350 to 380
+        translate(currentFish.fishX, 380);
         imageMode(CENTER);
         tint(0, 50, 120, 100); 
         
@@ -115,7 +115,7 @@ class GameManager {
       typer.displayBubble();
       fill(255);
       textSize(16);
-      text(currentFish.name, currentFish.fishX, 410); // Changed from 380 to 410 so it sits nicely below the fish
+      text(currentFish.name, currentFish.fishX, 410);
     }
   }
 
@@ -170,6 +170,7 @@ class GameManager {
     text("SCORE: " + score, 20, 40);
     text("LIVES: " + lives, 20, 70);
     
+    // Test the Fish Type
     //if ((gameState == 0 || gameState == 1) && currentFish != null) {
     //  textAlign(RIGHT);
     //  text(currentFish.name.toUpperCase() + " [" + currentFish.fishDiff.toUpperCase() + "]", width - 20, 40);
