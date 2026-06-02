@@ -30,7 +30,7 @@ class TypingEngine {
   void checkReelingInput(Fish f) {
     if (index < target.length()) {
       if (Character.toLowerCase(key) == Character.toLowerCase(target.charAt(index))) {
-        f.fishX -= 25;
+        f.fishX -= 40;
         isCorrect[index] = true;
       } else {
         f.fishX += 35;
