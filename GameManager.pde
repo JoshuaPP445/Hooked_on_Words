@@ -18,20 +18,20 @@ class GameManager {
 
   void startWaiting() {
     gameState = WAITING;
-    waitTimer = (int)random(30, 60); 
+    waitTimer = (int)random(30, 60);
     currentFish = null;
   }
 
   void spawnFish() {
     currentFish = new Fish();
     typer.setTarget(currentFish.name, true);
-    fishingTimer = 0; 
+    fishingTimer = 0;
     gameState = 0;
   }
 
   void run() {
     drawFishingLine();
-    
+
     drawUI();
     switch(gameState) {
     case WAITING:
@@ -64,35 +64,35 @@ class GameManager {
   }
 
   void drawFishingLine() {
-    float rodTipX = 242;
-    float rodTipY = 215;
+    float[] tipXCoordinates = { 242, 189, 171, 242 };
+    float[] tipYCoordinates = { 215, 171, 126, 215 };
+
+    float rodTipX = tipXCoordinates[currentFrame];
+    float rodTipY = tipYCoordinates[currentFrame];
 
     strokeWeight(1);
-    stroke(0); 
-    
+    stroke(0);
+
     if (gameState == 1 && currentFish != null) {
       float hookX = currentFish.fishX - 24;
       float hookY = 380;
-      
+
       line(rodTipX, rodTipY, hookX, hookY);
-      
     } else {
-      // --- Added Floating Bobber Physics ---
-      // Use sin() to swing the bobber left and right softly over time
+      // --- Floating Bobber Physics ---
       float bobberSwingX = rodTipX + sin(frameCount * 0.05) * 15;
-      // Use cos() to bob it slightly up and down out of phase for a circular water drift
       float lineDropY = 400 + cos(frameCount * 0.07) * 5;
-      
-      // Draw the fishing line angled towards the drifting bobber position
+
+      // Draw the fishing line shifting from the dynamic rod tip to the drifting bobber position
       line(rodTipX, rodTipY, bobberSwingX, lineDropY);
-      
+
       strokeWeight(1);
       stroke(0);
-      
-      // Red half of the bobber (Swings with the coordinates)
+
+      // Red half of the bobber
       fill(255, 0, 0);
       arc(bobberSwingX, lineDropY, 12, 12, PI, TWO_PI, CHORD);
-      
+
       // White half of the bobber
       fill(255);
       arc(bobberSwingX, lineDropY, 12, 12, 0, PI, CHORD);
@@ -112,14 +112,14 @@ class GameManager {
         pushMatrix();
         translate(currentFish.fishX, 380);
         imageMode(CENTER);
-        tint(0, 50, 120, 100); 
-        
+        tint(0, 50, 120, 100);
+
         image(currentFish.fishImg, 0, 0, 64, 64);
         noTint();
         popMatrix();
         imageMode(CORNER);
       }
-      
+
       currentFish.displayShadow();
       typer.displayBubble();
       fill(255);
@@ -135,7 +135,7 @@ class GameManager {
       typer.displaySentence();
 
       // Adjust bounding checks if your new background structure implies different boundaries
-      float hookX = currentFish.fishX - 32; 
+      float hookX = currentFish.fishX - 24;
       if (hookX <= fishCaughtX) {
         score += currentFish.fishScore;
         startWaiting();
@@ -178,7 +178,7 @@ class GameManager {
     textAlign(LEFT);
     text("SCORE: " + score, 20, 40);
     text("LIVES: " + lives, 20, 70);
-    
+
     // Test the Fish Type
     //if ((gameState == 0 || gameState == 1) && currentFish != null) {
     //  textAlign(RIGHT);

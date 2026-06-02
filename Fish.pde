@@ -8,7 +8,7 @@ class Fish {
   PImage fishImg;
 
   Fish() {
-    initialFishX = random(400, 600);
+    initialFishX = random(600, 700);
     fishX = initialFishX;
     name = names[(int)random(names.length)];
     
@@ -16,16 +16,16 @@ class Fish {
     
     if (name.equals("Bass")) {
       fishDiff = "easy";
-      fishScore = 5;
-      struggle = 0.6;
+      fishScore = 10;
+      struggle = 1.5;
     } else if (name.equals("Trout") || name.equals("Snapper")) {
       fishDiff = "medium";
-      fishScore = 15;
-      struggle = 1.1;
+      fishScore = 25;
+      struggle = 2.2;
     } else { 
       fishDiff = "hard";
-      fishScore = 40;
-      struggle = 1.6;
+      fishScore = 50;
+      struggle = 2.7;
     }
   }
 

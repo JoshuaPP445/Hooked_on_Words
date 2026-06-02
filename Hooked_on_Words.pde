@@ -2,14 +2,19 @@ import gifAnimation.*;
 
 GameManager gm;
 final int WAITING = 4;
-PImage bgImgFront, bgImgBack;
+PImage bgImgBack;
+PImage[] fishermanImg = new PImage[4];
+int currentFrame = 0;
 Gif oceanGif;
 
 void setup() {
   size(800, 450);
   
-  bgImgBack = loadImage("background_1.jpg");
-  bgImgFront = loadImage("background_2.png");
+  bgImgBack = loadImage("background.png");
+  fishermanImg[0] = loadImage("fisher_1.png");
+  fishermanImg[1] = loadImage("fisher_2.png");
+  fishermanImg[2] = loadImage("fisher_3.png");
+  fishermanImg[3] = loadImage("fisher_4.png");
   
   oceanGif = new Gif(this, "ocean.gif");
   oceanGif.loop();
@@ -28,10 +33,18 @@ void draw() {
     image(oceanGif, 0, 0);
   }
   
-  if (bgImgFront != null) {
-    image(bgImgFront, 0, 0);
+  // Animate/choose your currentFrame depending on the game state.
+  // For example, if reeling, change frame based on the timer or typing index.
+  if (gm.gameState == 1) {
+    // Cycles frames 0, 1, 2 smoothly over time while reeling
+    currentFrame = (frameCount / 10) % 4; 
   } else {
-    background(200, 230, 255);
+    currentFrame = 0; // Default idle frame when waiting or fishing
+  }
+  
+  // Draw the dynamic foreground fisherman image
+  if (fishermanImg[currentFrame] != null) {
+    image(fishermanImg[currentFrame], 0, 0);
   }
   
   // ---------------------------------------------------------
