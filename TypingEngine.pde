@@ -6,9 +6,9 @@ class TypingEngine {
   boolean failed = false;
 
   // Categorized sentence pools
-  String[] easySentences = {"Easy does it", "Hold the line", "Fish on"};
-  String[] mediumSentences = {"Keep reeling it in", "Dont let it get away", "Pull it closer"};
-  String[] hardSentences = {"The ocean is deep and blue", "Fighting a monster of the deep", "Hold on for dear life"};
+  String[] easySentences = {"Easy does it", "Hold the line", "Fish on", "Lucky Catch", "Tight line", "hooked"};
+  String[] mediumSentences = {"Keep reeling it in", "Dont let it get away", "Pull it closer", "One more cast"};
+  String[] hardSentences = {"The ocean is deep and blue", "Fighting a monster of the deep", "Hold on for dear life", "The fish pulls hard", "One chance one catch"};
 
   void setTarget(String t, boolean clearInput) {
     target = t;
