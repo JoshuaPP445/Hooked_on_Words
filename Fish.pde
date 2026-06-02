@@ -1,5 +1,5 @@
 class Fish {
-  float fishX;
+  float fishX, initialFishX;
   String name;
   float struggle;
   int fishScore;
@@ -8,7 +8,8 @@ class Fish {
   PImage fishImg;
 
   Fish() {
-    fishX = random(400, 600);
+    initialFishX = random(400, 600);
+    fishX = initialFishX;
     name = names[(int)random(names.length)];
     
     fishImg = loadImage(name.toLowerCase() + ".png");

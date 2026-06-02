@@ -5,7 +5,8 @@ class GameManager {
   TypingEngine typer;
   int waitTimer = 0;
   int fishingTimer = 0;
-  int fishingDuration = 300; 
+  int fishingDuration = 300;
+  int fishCaughtX = 215;
 
   GameManager() {
     score = 0;
@@ -17,7 +18,7 @@ class GameManager {
 
   void startWaiting() {
     gameState = WAITING;
-    waitTimer = (int)random(120, 300); 
+    waitTimer = (int)random(30, 60); 
     currentFish = null;
   }
 
@@ -55,7 +56,7 @@ class GameManager {
     waitTimer--;
     textAlign(CENTER);
     fill(0, 100);
-    text("Waiting for a bite...", width/2, height/2 + 50);
+    text("Waiting for a bite... [" + waitTimer/10 + "]", width/2, height/2 + 50);
 
     if (waitTimer <= 0) {
       spawnFish();
@@ -76,17 +77,25 @@ class GameManager {
       line(rodTipX, rodTipY, hookX, hookY);
       
     } else {
-      float lineDropY = 320;
-      line(rodTipX, rodTipY, rodTipX, lineDropY);
+      // --- Added Floating Bobber Physics ---
+      // Use sin() to swing the bobber left and right softly over time
+      float bobberSwingX = rodTipX + sin(frameCount * 0.05) * 15;
+      // Use cos() to bob it slightly up and down out of phase for a circular water drift
+      float lineDropY = 400 + cos(frameCount * 0.07) * 5;
+      
+      // Draw the fishing line angled towards the drifting bobber position
+      line(rodTipX, rodTipY, bobberSwingX, lineDropY);
       
       strokeWeight(1);
       stroke(0);
       
+      // Red half of the bobber (Swings with the coordinates)
       fill(255, 0, 0);
-      arc(rodTipX, lineDropY, 12, 12, PI, TWO_PI, CHORD);
+      arc(bobberSwingX, lineDropY, 12, 12, PI, TWO_PI, CHORD);
       
+      // White half of the bobber
       fill(255);
-      arc(rodTipX, lineDropY, 12, 12, 0, PI, CHORD);
+      arc(bobberSwingX, lineDropY, 12, 12, 0, PI, CHORD);
     }
     noStroke();
   }
@@ -127,7 +136,7 @@ class GameManager {
 
       // Adjust bounding checks if your new background structure implies different boundaries
       float hookX = currentFish.fishX - 32; 
-      if (hookX <= 215) {
+      if (hookX <= fishCaughtX) {
         score += currentFish.fishScore;
         startWaiting();
         return;
@@ -155,7 +164,7 @@ class GameManager {
         loseLife();
       }
     } else if (gameState == 1 && currentFish != null) {
-      typer.checkReelingInput(currentFish);
+      typer.checkReelingInput(currentFish, this);
     } else if (gameState == 2 && key == ' ') {
       reset();
     } else if (gameState == 3 && key == ' ') {
@@ -191,9 +200,9 @@ class GameManager {
     textAlign(CENTER);
     fill(0);
     textSize(40);
-    text("HOOKED ON WORDS", width/2, height/2);
+    text("HOOKED ON WORDS", width/2, height/2 - 30);
     textSize(20);
-    text("Press SPACE to Start", width/2, height/2 + 50);
+    text("Press SPACE to Start", width/2, height/2 + 20);
   }
 
   void reset() {

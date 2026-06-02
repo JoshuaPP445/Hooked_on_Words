@@ -27,20 +27,29 @@ class TypingEngine {
     return false;
   }
 
-  void checkReelingInput(Fish f) {
-    if (index < target.length()) {
-      if (Character.toLowerCase(key) == Character.toLowerCase(target.charAt(index))) {
-        f.fishX -= 40;
-        isCorrect[index] = true;
-      } else {
-        f.fishX += 35;
-        isCorrect[index] = false;
-      }
-      index++;
-      // Pull next sentence from the specific difficulty pool of the current fish
-      if (index >= target.length()) setTarget(getRandomSentence(f.fishDiff), false);
+  void checkReelingInput(Fish f, GameManager gm) {
+  // Calculate total distance the fish needs to travel to reach the caught zone
+  float totalDistance = f.initialFishX - gm.fishCaughtX;
+  
+  if (index < target.length()) {
+    // Each character represents 1 / target.length() of that total distance
+    float step = totalDistance / target.length(); 
+    
+    if (Character.toLowerCase(key) == Character.toLowerCase(target.charAt(index))) {
+      f.fishX -= step; // Pulls closer by exactly 1 fraction of the distance
+      isCorrect[index] = true;
+    } else {
+      f.fishX += step * 3; // Incorrect stroke penalizes by 3 fractions backward
+      isCorrect[index] = false;
+    }
+    index++;
+    
+    // Pull next sentence from the specific difficulty pool if this one is finished
+    if (index >= target.length()) {
+      setTarget(getRandomSentence(f.fishDiff), false);
     }
   }
+}
 
   void displayBubble() {
     fill(255);
