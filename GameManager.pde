@@ -102,6 +102,8 @@ class GameManager {
 
   void drawFishingPhase() {
     if (currentFish != null) {
+      currentFish.swimIn();
+
       fishingTimer++;
       if (fishingTimer >= fishingDuration) {
         startWaiting();
@@ -121,10 +123,16 @@ class GameManager {
       }
 
       currentFish.displayShadow();
-      typer.displayBubble();
+
+      if (currentFish.isReady) {
+        typer.displayBubble();
+      }
+      
+      textAlign(CENTER);
       fill(255);
       textSize(16);
       text(currentFish.name, currentFish.fishX, 410);
+      textAlign(LEFT);
     }
   }
 
@@ -157,6 +165,7 @@ class GameManager {
 
   void handleInput() {
     if (gameState == 0) {
+      if (currentFish != null && !currentFish.isReady) return;
       if (typer.checkBubbleInput()) {
         gameState = 1;
         typer.setTarget(typer.getRandomSentence(currentFish.fishDiff), false);

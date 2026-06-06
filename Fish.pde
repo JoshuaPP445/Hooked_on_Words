@@ -6,10 +6,13 @@ class Fish {
   String fishDiff;
   String[] names = {"Tuna", "Salmon", "Bass", "Trout", "Snapper"};
   PImage fishImg;
+  
+  float entryX = 850;
+  boolean isReady = false;
 
   Fish() {
     initialFishX = random(600, 700);
-    fishX = initialFishX;
+    fishX = entryX;
     name = names[(int)random(names.length)];
     
     fishImg = loadImage(name.toLowerCase() + ".png");
@@ -26,6 +29,19 @@ class Fish {
       fishDiff = "hard";
       fishScore = 50;
       struggle = 2.7;
+    }
+  }
+  
+  void swimIn() {
+    if (!isReady) {
+      // lerp(current, target, speed) smoothly eases the fish into position
+      fishX = lerp(fishX, initialFishX, 0.05);
+      
+      // Once it gets close enough, lock it into place and activate gameplay
+      if (abs(fishX - initialFishX) < 1.0) {
+        fishX = initialFishX;
+        isReady = true;
+      }
     }
   }
 
