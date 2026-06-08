@@ -28,37 +28,54 @@ class TypingEngine {
   }
 
   void checkReelingInput(Fish f, GameManager gm) {
-  // Calculate total distance the fish needs to travel to reach the caught zone
-  float totalDistance = f.fishX - gm.fishCaughtX;
-  int remainingChars = target.length() - index;
-  float step = totalDistance / remainingChars;
-  
-  if (index < target.length()) {
-    // Each character represents 1 / target.length() of that total distance
-    
-    if (Character.toLowerCase(key) == Character.toLowerCase(target.charAt(index))) {
-      f.fishX -= step; // Pulls closer by exactly 1 fraction of the distance
-      isCorrect[index] = true;
-    } else {
-      f.fishX += 35; // Incorrect stroke penalizes by 3 fractions backward
-      isCorrect[index] = false;
+    // Calculate total distance the fish needs to travel to reach the caught zone
+    float totalDistance = f.fishX - gm.fishCaughtX;
+    int remainingChars = max(1, target.length() - index);
+    float step = totalDistance / remainingChars;
+
+    if (index < target.length()) {
+      // Each character represents 1 / target.length() of that total distance
+
+      if (Character.toLowerCase(key) == Character.toLowerCase(target.charAt(index))) {
+        f.fishX -= step; // Pulls closer by exactly 1 fraction of the distance
+        isCorrect[index] = true;
+        index++;
+      } else {
+        f.fishX += 35; // Incorrect stroke penalizes by 3 fractions backward
+        if (index >= 0 && index < isCorrect.length) {
+          isCorrect[index] = false;
+        }
+      }
     }
-    index++;
   }
-}
 
   void displayBubble() {
+    stroke(0);
+    strokeWeight(2);
+
     fill(255);
-    rect(100, 50, 200, 50, 15);
+    rect(50, 100, 200, 50, 15);
+    noStroke();
+
     fill(0);
     textAlign(CENTER);
-    text(input + "|", 200, 82);
+    if (input.length() == 0) {
+      // Placeholder text for UX
+      textSize(16);
+      fill(160);
+      text("Input fish name", 150, 129);
+    } else {
+      textSize(18);
+      fill(0);
+      text(input + "|", 150, 132);
+    }
   }
 
   void displaySentence() {
     textAlign(LEFT);
     textSize(28);
     float startX = width/2 - (textWidth(target)/2);
+
     for (int i=0; i<target.length(); i++) {
       fill(i < index ? (isCorrect[i] ? color(0, 150, 0) : color(255, 0, 0)) : 150);
       text(target.charAt(i), startX + textWidth(target.substring(0, i)), 160);

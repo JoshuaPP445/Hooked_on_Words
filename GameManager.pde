@@ -127,7 +127,7 @@ class GameManager {
       if (currentFish.isReady) {
         typer.displayBubble();
       }
-      
+
       textAlign(CENTER);
       fill(255);
       textSize(16);
@@ -151,7 +151,7 @@ class GameManager {
         return;
       }
 
-      if (hookX >= width) {
+      if (hookX >= width && currentFish.isReady) {
         loseLife();
         return;
       }
@@ -160,11 +160,16 @@ class GameManager {
 
   void loseLife() {
     lives--;
-    loseFish.play();
     if (lives <= 0) {
-    gameState = 2;
-    gameOver.play();}
-    else startWaiting();
+      gameState = 2;
+      bgm.stop();
+      if (!gameOver.isPlaying()) {
+        gameOver.play();
+      }
+    } else {
+      loseFish.play();
+      startWaiting();
+    }
   }
 
   void handleInput() {
@@ -221,6 +226,7 @@ class GameManager {
   void reset() {
     score = 0;
     lives = 3;
+    bgm.loop();
     startWaiting();
   }
 }

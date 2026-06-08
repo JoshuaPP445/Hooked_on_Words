@@ -30,8 +30,8 @@ void setup() {
   bgm.amp(0.3);
 
   hookSfx = new SoundFile(this, "hook.mp3");
-  loseFish = new SoundFile(this,"lose.mp3");
-  gameOver = new SoundFile(this,"over.mp3");
+  loseFish = new SoundFile(this, "lose.mp3");
+  gameOver = new SoundFile(this, "over.mp3");
 
   gm = new GameManager();
 }

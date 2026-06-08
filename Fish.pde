@@ -46,8 +46,7 @@ class Fish {
   }
 
   void updateStruggle() {
-    float move = (random(100) < 0.5) ? 25.0 : struggle;
-    fishX += move;
+    fishX += struggle;
   }
 
   void displayShadow() {
