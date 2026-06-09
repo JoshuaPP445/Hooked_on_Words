@@ -8,9 +8,12 @@ import gifAnimation.*;
 
 GameManager gm;
 final int WAITING = 4;
+final int CASTING = 5;
+
 PImage bgImgBack;
 PImage[] fishermanImg = new PImage[4];
 int currentFrame = 0;
+int castFrameCounter = 0;
 Gif oceanGif;
 
 void setup() {
@@ -49,9 +52,18 @@ void draw() {
 
   // Animate/choose your currentFrame depending on the game state.
   // For example, if reeling, change frame based on the timer or typing index.
-  if (gm.gameState == 1) {
+  if (gm.gameState == CASTING) {
+      castFrameCounter++;
+    if (castFrameCounter % 8 == 0) { 
+      currentFrame++;
+      if (currentFrame > 3) {
+        currentFrame = 3; 
+        gm.finishCasting(); 
+      }
+    } 
+  } else if (gm.gameState == 1) {
     // Cycles frames 0, 1, 2 smoothly over time while reeling
-    currentFrame = (frameCount / 10) % 4;
+    currentFrame = 2+ (frameCount / 10) % 2;
   } else {
     currentFrame = 0; // Default idle frame when waiting or fishing
   }
