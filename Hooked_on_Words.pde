@@ -9,6 +9,10 @@ import gifAnimation.*;
 GameManager gm;
 final int WAITING = 4;
 final int CASTING = 5;
+final int INTRO = 6;
+
+// Global mode state flag managed here
+boolean freeTypeMode = false; 
 
 PImage bgImgBack;
 PImage[] fishermanImg = new PImage[4];
@@ -27,7 +31,6 @@ void setup() {
 
   oceanGif = new Gif(this, "ocean.gif");
   oceanGif.loop();
-
   bgm = new SoundFile(this, "bgm.mp3");
   bgm.loop();
   bgm.amp(0.3);
@@ -50,50 +53,32 @@ void draw() {
     image(oceanGif, 0, 0);
   }
 
-  // Animate/choose your currentFrame depending on the game state.
-  // For example, if reeling, change frame based on the timer or typing index.
   if (gm.gameState == CASTING) {
-      castFrameCounter++;
+    castFrameCounter++;
     if (castFrameCounter % 8 == 0) { 
       currentFrame++;
       if (currentFrame > 3) {
         currentFrame = 3; 
-        gm.finishCasting(); 
+        gm.finishCasting();
       }
     } 
   } else if (gm.gameState == 1) {
-    // Cycles frames 0, 1, 2 smoothly over time while reeling
-    currentFrame = 2+ (frameCount / 10) % 2;
+    currentFrame = 2 + (frameCount / 10) % 2;
   } else {
-    currentFrame = 0; // Default idle frame when waiting or fishing
+    currentFrame = 0; 
   }
 
-  // Draw the dynamic foreground fisherman image
   if (fishermanImg[currentFrame] != null) {
     image(fishermanImg[currentFrame], 0, 0);
   }
-
-  // ---------------------------------------------------------
-  // DEBUG OVERLAY: Delete or comment this section out later!
-  // ---------------------------------------------------------
-  //// 1. Draw a red crosshair at the mouse position
-  //stroke(255, 0, 0);
-  //strokeWeight(1);
-  //line(mouseX - 10, mouseY, mouseX + 10, mouseY);
-  //line(mouseX, mouseY - 10, mouseX, mouseY + 10);
-
-  //// 2. Display the coordinate text near the cursor
-  //fill(0);
-  //rect(mouseX + 15, mouseY - 25, 95, 22, 5); // Background box for readability
-  //fill(255, 255, 0); // Bright yellow text
-  //textSize(14);
-  //textAlign(LEFT, CENTER);
-  //text("X: " + mouseX + " Y: " + mouseY, mouseX + 20, mouseY - 15);
-  // ---------------------------------------------------------
 
   gm.run();
 }
 
 void keyPressed() {
   gm.handleInput();
+}
+
+void mousePressed() {
+  gm.handleMouse();
 }

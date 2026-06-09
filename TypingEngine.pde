@@ -5,10 +5,27 @@ class TypingEngine {
   boolean[] isCorrect;
   boolean failed = false;
 
-  // Categorized sentence pools
-  String[] easySentences = {"Easy does it", "Hold the line", "Fish on", "Lucky Catch", "Tight line", "hooked"};
-  String[] mediumSentences = {"Keep reeling it in", "Dont let it get away", "Pull it closer", "One more cast"};
-  String[] hardSentences = {"The ocean is deep and blue", "Fighting a monster of the deep", "Hold on for dear life", "The fish pulls hard", "One chance one catch"};
+  StringList easySentences;
+  StringList mediumSentences;
+  StringList hardSentences;
+
+  TypingEngine() {
+    easySentences = new StringList("Easy does it", "Hold the line", "Fish on", "Lucky Catch", "Tight line", "hooked");
+    mediumSentences = new StringList("Keep reeling it in", "Dont let it get away", "Pull it closer", "One more cast");
+    hardSentences = new StringList("The ocean is deep and blue", "Fighting a monster of the deep", "Hold on for dear life", "The fish pulls hard", "One chance one catch");
+  }
+
+  void addCustomSentence(String sentence, String diff) {
+    if (sentence.trim().length() == 0) return;
+    
+    if (diff.equals("easy")) {
+      easySentences.append(sentence);
+    } else if (diff.equals("medium")) {
+      mediumSentences.append(sentence);
+    } else if (diff.equals("hard")) {
+      hardSentences.append(sentence);
+    }
+  }
 
   void setTarget(String t, boolean clearInput) {
     target = t;
@@ -28,22 +45,33 @@ class TypingEngine {
   }
 
   void checkReelingInput(Fish f, GameManager gm) {
-    // Calculate total distance the fish needs to travel to reach the caught zone
-    float totalDistance = f.fishX - gm.fishCaughtX;
-    int remainingChars = max(1, target.length() - index);
-    float step = totalDistance / remainingChars;
+    if (freeTypeMode) {
+      if (key == BACKSPACE && input.length() > 0) {
+        input = input.substring(0, input.length() - 1);
+      } else if (key == ENTER || key == RETURN) {
+        if (input.trim().length() > 0) {
+          float pullPower = input.trim().length() * 25;
+          f.fishX -= pullPower; 
+          input = ""; 
+        }
+      } else if (key != CODED && key != ESC && key != BACKSPACE) {
+        input += key;
+      }
+    } else {
+      float totalDistance = f.fishX - gm.fishCaughtX;
+      int remainingChars = max(1, target.length() - index);
+      float step = totalDistance / remainingChars;
 
-    if (index < target.length()) {
-      // Each character represents 1 / target.length() of that total distance
-
-      if (Character.toLowerCase(key) == Character.toLowerCase(target.charAt(index))) {
-        f.fishX -= step; // Pulls closer by exactly 1 fraction of the distance
-        isCorrect[index] = true;
-        index++;
-      } else {
-        f.fishX += 35; // Incorrect stroke penalizes by 3 fractions backward
-        if (index >= 0 && index < isCorrect.length) {
-          isCorrect[index] = false;
+      if (index < target.length()) {
+        if (Character.toLowerCase(key) == Character.toLowerCase(target.charAt(index))) {
+          f.fishX -= step;
+          isCorrect[index] = true;
+          index++;
+        } else {
+          f.fishX += 35;
+          if (index >= 0 && index < isCorrect.length) {
+            isCorrect[index] = false;
+          }
         }
       }
     }
@@ -52,7 +80,6 @@ class TypingEngine {
   void displayBubble() {
     stroke(0);
     strokeWeight(2);
-
     fill(255);
     rect(50, 100, 200, 50, 15);
     noStroke();
@@ -60,7 +87,6 @@ class TypingEngine {
     fill(0);
     textAlign(CENTER);
     if (input.length() == 0) {
-      // Placeholder text for UX
       textSize(16);
       fill(160);
       text("Input fish name", 150, 129);
@@ -72,6 +98,11 @@ class TypingEngine {
   }
 
   void displaySentence() {
+    if (freeTypeMode) {
+      displayFreeType();
+      return;
+    }
+
     textAlign(LEFT);
     textSize(28);
     float startX = width/2 - (textWidth(target)/2);
@@ -86,14 +117,39 @@ class TypingEngine {
     }
   }
 
-  // Gets a random sentence based on the passed difficulty string
+  void displayFreeType() {
+    textAlign(CENTER);
+    textSize(22);
+    fill(0, 102, 204);
+    text("FREE REELING MODE: Type anything to pull!", width/2, 110);
+    
+    stroke(50, 120, 200);
+    strokeWeight(2);
+    fill(245, 250, 255);
+    rect(width/2 - 250, 135, 500, 45, 10);
+    noStroke();
+    
+    fill(0);
+    textSize(24);
+    textAlign(LEFT, CENTER);
+    text(input + (frameCount % 45 < 22 ? "|" : ""), width/2 - 230, 155);
+    
+    textAlign(CENTER);
+    textSize(13);
+    fill(100);
+    text("Press ENTER to execute pull strength based on word length!", width/2, 205);
+  }
+
   String getRandomSentence(String diff) {
     if (diff.equals("easy")) {
-      return easySentences[(int)random(easySentences.length)];
+      int r = (int)random(easySentences.size());
+      return easySentences.get(r);
     } else if (diff.equals("medium")) {
-      return mediumSentences[(int)random(mediumSentences.length)];
+      int r = (int)random(mediumSentences.size());
+      return mediumSentences.get(r);
     } else {
-      return hardSentences[(int)random(hardSentences.length)];
+      int r = (int)random(hardSentences.size());
+      return hardSentences.get(r);
     }
   }
 }
