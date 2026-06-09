@@ -5,8 +5,11 @@ class GameManager {
   TypingEngine typer;
   int waitTimer = 0;
   int fishingTimer = 0;
-  int fishingDuration = 300;
+  int fishingDuration = 400;
   int fishCaughtX = 215;
+
+  float bobberX;
+  float bobberY;
 
   GameManager() {
     score = 0;
@@ -22,20 +25,32 @@ class GameManager {
     currentFish = null;
   }
 
+  void triggerCast() {
+    gameState = CASTING;
+    currentFrame = 0;
+    castFrameCounter = 0;
+  }
+
+  void finishCasting() {
+    spawnFish();
+  }
+
   void spawnFish() {
-    currentFish = new Fish();
+    currentFish = new Fish(650);
     typer.setTarget(currentFish.name, true);
     fishingTimer = 0;
     gameState = 0;
   }
 
   void run() {
-    drawFishingLine();
+    updateBobberPosition();
 
     drawUI();
     switch(gameState) {
     case WAITING:
       updateWaiting();
+      break;
+    case CASTING:
       break;
     case 0:
       drawFishingPhase();
@@ -50,6 +65,9 @@ class GameManager {
       drawStartScreen();
       break;
     }
+    if (gameState != 2) {
+      drawFishingLine();
+    }
   }
 
   void updateWaiting() {
@@ -59,43 +77,69 @@ class GameManager {
     text("Waiting for a bite... [" + waitTimer/10 + "]", width/2, height/2 + 50);
 
     if (waitTimer <= 0) {
-      spawnFish();
+      //spawnFish();
+      triggerCast();
+    }
+  }
+
+  void updateBobberPosition() {
+    float[] tipXCoordinates = { 242, 189, 171, 242 };
+    float[] tipYCoordinates = { 215, 171, 126, 215 };
+    float rodTipX = tipXCoordinates[currentFrame];
+    float rodTipY = tipYCoordinates[currentFrame];
+    if (gameState == WAITING || gameState == 3) {
+      bobberX = rodTipX + sin(frameCount * 0.05) * 2;
+      bobberY = rodTipY + 25 + cos(frameCount * 0.07) * 3;
+    } else if (gameState == CASTING) {
+      float progress = currentFrame / 3.0;
+      bobberX = lerp(rodTipX, 650, progress);
+      bobberY = lerp(rodTipY, 380, progress);
+    } else if (gameState == 0) {
+      bobberX = 650 + sin(frameCount * 0.05) * 10;
+      bobberY = 380 + cos(frameCount * 0.07) * 4;
+    } else if (gameState == 1 && currentFish != null) {
+
+      bobberX = currentFish.fishX - 24;
+      bobberY = 380 + sin(frameCount * 0.2) * 3;
     }
   }
 
   void drawFishingLine() {
     float[] tipXCoordinates = { 242, 189, 171, 242 };
     float[] tipYCoordinates = { 215, 171, 126, 215 };
-
     float rodTipX = tipXCoordinates[currentFrame];
     float rodTipY = tipYCoordinates[currentFrame];
 
     strokeWeight(1);
     stroke(0);
+    //line(rodTipX, rodTipY, bobberX, bobberY);
+
+    //if (gameState != 1) {
+    //  stroke(0);
+    //  strokeWeight(1);
+    //  fill(255, 0, 0); // red half
+    //  arc(bobberX, bobberY, 12, 12, PI, TWO_PI, CHORD);
+    //  fill(255);       // white half
+    //  arc(bobberX, bobberY, 12, 12, 0, PI, CHORD);
+    //  noStroke();
+    //}
 
     if (gameState == 1 && currentFish != null) {
       float hookX = currentFish.fishX - 24;
       float hookY = 380;
-
       line(rodTipX, rodTipY, hookX, hookY);
     } else {
       // --- Floating Bobber Physics ---
-      float bobberSwingX = rodTipX + sin(frameCount * 0.05) * 15;
-      float lineDropY = 400 + cos(frameCount * 0.07) * 5;
-
+      //float bobberSwingX = rodTipX + sin(frameCount * 0.05) * 15;
+      //float lineDropY = 400 + cos(frameCount * 0.07) * 5;
       // Draw the fishing line shifting from the dynamic rod tip to the drifting bobber position
-      line(rodTipX, rodTipY, bobberSwingX, lineDropY);
-
-      strokeWeight(1);
+      line(rodTipX, rodTipY, bobberX, bobberY);
       stroke(0);
-
-      // Red half of the bobber
-      fill(255, 0, 0);
-      arc(bobberSwingX, lineDropY, 12, 12, PI, TWO_PI, CHORD);
-
-      // White half of the bobber
-      fill(255);
-      arc(bobberSwingX, lineDropY, 12, 12, 0, PI, CHORD);
+      strokeWeight(1);
+      fill(255, 0, 0); // red
+      arc(bobberX, bobberY, 12, 12, PI, TWO_PI, CHORD);
+      fill(255);       // white
+      arc(bobberX, bobberY, 12, 12, 0, PI, CHORD);
     }
     noStroke();
   }
